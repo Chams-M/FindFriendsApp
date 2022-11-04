@@ -2,6 +2,7 @@ package com.example.findfriends;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -43,8 +44,18 @@ public class MyReceiver extends BroadcastReceiver {
                             Toast.LENGTH_LONG)
                             .show();
 
-                    if (messageBody.contains("#FindFriends:envoyer moi votre position")) {
+                    if (messageBody.contains("FindFriends:envoyer moi votre position ")) {
                         //affichage de notification
+
+                        Intent i = new Intent(context, MyLocationService.class);
+                        i.putExtra("numero", phoneNumber);
+                        context.startService(i);
+
+                    }
+                    if (messageBody.contains("FindFriends:ma position est : #")) {
+                        String[]t=messageBody.split("#");
+                        String longtitude=t[1];
+                        String latitude=t[2];
 
                         // lancer une notification dans le canal myapplication_channel
                         NotificationCompat.Builder mynotif =
@@ -54,36 +65,46 @@ public class MyReceiver extends BroadcastReceiver {
                         mynotif.setContentText(phoneNumber + "à envoyé sa position");
                         mynotif.setSmallIcon(android.R.drawable.ic_dialog_map);
                         mynotif.setAutoCancel(true);
+
+                        //map
+                        Intent i=new Intent(context,MapsActivity.class);
+                        i.putExtra("longtitude",longtitude);
+                        i.putExtra("latitude",latitude);
+                        PendingIntent pi=PendingIntent.getActivity(context,1,i,PendingIntent.FLAG_MUTABLE);
+                        mynotif.setContentIntent(pi);
+
+
+
+
                         mynotif.setVibrate(new long[]{500, 1000, 200, 2000}); // il faut ajouter la permission VIBRATE dans le manifest
                         Uri son = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
                         mynotif.setSound(son);
+
+
 
                         // instance du gestionnaire des notifications de l'appareil
                         NotificationManagerCompat manager =
                                 NotificationManagerCompat.from(context);
 
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                        {/* creation du canal si la version android de l'appareil est supérieur à
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {/* creation du canal si la version android de l'appareil est supérieur à
 Oreo */
-                            NotificationChannel canal=new
+                            NotificationChannel canal = new
                                     NotificationChannel("findfriends_canal",
                                     // l'ID exacte du canal
                                     "canal pour lapplication find me",
                                     NotificationManager.IMPORTANCE_DEFAULT);
-                            AudioAttributes attr=new AudioAttributes.Builder()
+                            AudioAttributes attr = new AudioAttributes.Builder()
 
                                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                                     .setUsage(AudioAttributes.USAGE_ALARM)
                                     .build();
                             // ajouter du son pour le canal
-                            canal.setSound(son,attr);
+                            canal.setSound(son, attr);
                             // creation du canal dans l'appareil
                             manager.createNotificationChannel(canal);
                         }
 
                         manager.notify(0, mynotif.build());
-
-
 
 
                     }

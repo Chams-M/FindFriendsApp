@@ -38,10 +38,25 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
+        ActivityCompat.requestPermissions(this,
+                new String[]{
+                        Manifest.permission.SEND_SMS,
+                        Manifest.permission.READ_SMS,
+                        Manifest.permission.RECEIVE_SMS,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION},
+                1);
+
     if (ActivityCompat.checkSelfPermission(this,Manifest.permission.SEND_SMS)== PackageManager.PERMISSION_DENIED)
         {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.SEND_SMS},
+                    new String[]{
+                            Manifest.permission.SEND_SMS,
+                            Manifest.permission.READ_SMS,
+                            Manifest.permission.SEND_SMS
+
+
+                    },
                     1
             );
         }

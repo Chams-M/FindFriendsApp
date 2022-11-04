@@ -33,7 +33,7 @@ public class HomeFragment extends Fragment {
                     String numero=binding.nb.getText().toString();
                     //envoie sms
                     SmsManager manager=SmsManager.getDefault();
-                    manager.sendTextMessage(numero,null,"#FindFriends:envoyer moi votre position",null,null);
+                    manager.sendTextMessage(numero,null,"FindFriends:envoyer moi votre position",null,null);
                 }
                 );
 
